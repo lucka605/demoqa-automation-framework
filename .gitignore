@@ -1,0 +1,18 @@
+# Maven
+target/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+.settings/
+.classpath
+.project
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Secrets
+.env
+.env.*

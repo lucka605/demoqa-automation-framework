@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="DemoQA Regression" parallel="false" verbose="1">
+ <listeners><listener class-name="listeners.ScreenshotListener" /></listeners>
+ <test name="UI Regression"><groups><run><include name="smoke"/><include name="regression"/></run></groups><classes>
+  <class name="tests.ui.TextBoxTests"/><class name="tests.ui.CheckBoxTests"/><class name="tests.ui.RadioButtonTests"/><class name="tests.ui.ButtonsTests"/><class name="tests.ui.AlertsTests"/><class name="tests.ui.WebTablesTests"/><class name="tests.ui.PracticeFormTests"/>
+ </classes></test>
+ <test name="API Regression"><groups><run><include name="api"/></run></groups><classes><class name="tests.api.BookStoreApiTests"/></classes></test>
+</suite>
