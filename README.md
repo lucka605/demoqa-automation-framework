@@ -1,89 +1,77 @@
 # DemoQA Automation Framework
 
-A Java-based test automation project for [DemoQA](https://demoqa.com/), combining **web UI testing** with **REST API testing** in a structured, maintainable framework.
+A Java-based test automation project for [DemoQA](https://demoqa.com/), combining **web UI testing** with **REST API testing** in a structured framework.
 
-The framework uses **Selenium WebDriver**, **TestNG**, **REST Assured**, and **Maven**. UI tests follow the **Page Object Model (POM)** pattern to separate test scenarios from browser interactions and element locators.
+The project uses **Selenium WebDriver**, **TestNG**, **REST Assured**, and **Apache Maven**. UI tests use the **Page Object Model (POM)** design pattern to separate test scenarios from browser interactions and locators.
 
-> **Project status:** The local smoke suite was executed successfully on **November 5, 2026**, with **9 tests run, 0 failures, 0 errors, and 0 skipped**. A successful GitHub Actions run has not yet been verified.
+> **Execution evidence:** The local smoke suite was reported successful on **November 5, 2026** (9 tests run, 0 failures, 0 errors, 0 skipped). The Maven packaging build was subsequently confirmed locally on **November 13, 2026**. A successful GitHub Actions run has not yet been verified. Test results may change as DemoQA changes.
 
 ## Technology Stack
 
 | Technology | Purpose |
 | --- | --- |
-| Java | Test implementation and framework code |
-| Selenium WebDriver | Browser automation for UI tests |
-| TestNG | Test execution, assertions, groups, and data providers |
-| REST Assured | HTTP requests and API response validation |
-| Maven | Dependency management, build, and test execution |
-| Maven Surefire | Runs tests and produces test reports |
-| GitHub Actions | CI workflow configuration (requires validation on GitHub) |
+| Java (release target: 17) | Framework and test implementation |
+| Selenium WebDriver 4.52.0 | Browser automation |
+| TestNG 7.11.0 | Test execution, assertions, and grouping |
+| REST Assured 6.3.0 | REST API testing |
+| Jackson Databind 2.18.3 | JSON processing |
+| Maven | Dependency resolution, compilation, test execution, and packaging |
+| Maven Surefire | TestNG execution and reports |
+| Maven JAR Plugin | Packaging compiled test classes into a classified test JAR |
+| GitHub Actions | Manually triggered CI workflow |
 
 ## Project Structure
 
 ```text
 demoqa-automation-framework/
 ├── .github/
-│   └── workflows/               # GitHub Actions workflow(s)
+│   └── workflows/
+│       └── manual-tests.yml
 ├── src/
 │   └── test/
 │       ├── java/
-│       │   ├── base/            # DriverFactory, BaseUiTest, BaseApiTest
-│       │   ├── pages/           # Page Object Model classes
+│       │   ├── base/          # DriverFactory and shared test setup
+│       │   ├── pages/         # Page Object Model classes
 │       │   ├── tests/
-│       │   │   ├── ui/          # Selenium UI tests
-│       │   │   └── api/         # REST Assured API tests
-│       │   ├── utils/           # Settings and test data helpers
-│       │   └── listeners/       # TestNG listeners (e.g., screenshots)
-│       └── resources/           # Test resources and configuration
-├── pom.xml                      # Maven build configuration
-├── testng.xml                   # Smoke suite
-├── testng-regression.xml        # Regression suite configuration
+│       │   │   ├── ui/        # Selenium UI tests
+│       │   │   └── api/       # REST Assured API tests
+│       │   ├── utils/         # Configuration and test-data utilities
+│       │   └── listeners/     # TestNG listeners and screenshots
+│       └── resources/        # Test configuration and resources
+├── docs/                      # QA documentation
+├── test-data/                 # Test data
+├── pom.xml                    # Maven build configuration and metadata
+├── testng.xml                 # Smoke suite
+├── testng-regression.xml      # Regression suite
 └── README.md
 ```
 
-> This tree summarizes the main components. The exact set of source files and CI workflow names may evolve as the framework is expanded.
+Build output is generated under `target/` and is ignored by Git.
 
 ## Framework Design
 
-- **`DriverFactory`** creates and manages browser driver instances. The framework uses `ThreadLocal` to associate a driver with the executing thread.
-- **`BaseUiTest`** handles shared UI test setup and teardown.
-- **`BaseApiTest`** provides common API request setup for REST Assured tests.
-- **Page Objects** encapsulate locators and interactions, keeping test cases focused on scenarios and assertions.
-- **TestNG** organizes test methods using groups, including `smoke` and `api`.
-- **`ScreenshotListener`** attempts to capture a screenshot when a UI test fails.
+- **`DriverFactory`** creates/manages browser sessions and uses `ThreadLocal` for per-thread driver association.
+- **`BaseUiTest`** handles common UI setup and teardown.
+- **`BaseApiTest`** provides shared REST Assured request setup.
+- **Page Objects** encapsulate locators and interactions.
+- **TestNG groups** select smoke, API, and regression scenarios.
+- **`ScreenshotListener`** attempts to capture screenshots when UI tests fail.
 
 ## Test Coverage
 
-### UI Automation
+**UI:** Text Box, Check Box, Radio Button, Buttons, and Alerts in the smoke suite. The regression suite also references Web Tables and Practice Form scenarios.
 
-The smoke suite references UI test classes for the following DemoQA components:
-
-- Text Box
-- Check Box
-- Radio Button
-- Buttons
-- Alerts
-
-Additional page objects and regression scenarios can be developed without duplicating browser interaction code.
-
-### API Automation
-
-The `BookStoreApiTests` class covers examples such as:
-
-- Retrieving the book catalog (`GET /BookStore/v1/Books`)
-- Retrieving a book by ISBN (`GET /BookStore/v1/Book`)
-- Validating the response for an unknown user (`POST /Account/v1/Authorized`)
-
-API assertions reflect the response observed during local testing; application behavior and endpoint contracts should be rechecked when updating the suite.
+**API:** The Book Store test class exercises the book catalog (`GET /BookStore/v1/Books`), book lookup by ISBN (`GET /BookStore/v1/Book`), and the response for a nonexistent user (`POST /Account/v1/Authorized`). Assertions are based on previously observed responses and may require review if the public API changes.
 
 ## Prerequisites
 
-- A compatible Java JDK
-- Apache Maven
-- Google Chrome (for Chrome-based UI runs)
-- Git (optional, for cloning and contributing)
+- **JDK 17 or newer** (Maven compiles with `--release 17`; local build was performed with Temurin JDK 25)
+- **Apache Maven 3.x** (local build used Maven 3.10.0)
+- **Internet access** for Maven Central on initial dependency resolution
+- **Google Chrome** for Chrome-based UI tests
+- **Internet access to DemoQA** when running its UI/API integration tests
 
-Check your environment:
+Check tools:
 
 ```bash
 java -version
@@ -92,90 +80,165 @@ mvn -version
 
 ## Getting Started
 
-Clone the repository and enter the project directory:
-
 ```bash
-git clone https://github.com/YOUR_USERNAME/demoqa-automation-framework.git
+git clone https://github.com/lucka605/demoqa-automation-framework.git
 cd demoqa-automation-framework
 ```
 
-Replace `YOUR_USERNAME` with your GitHub username after publishing the repository.
+### Build and package without executing external tests
 
-Run the configured smoke suite:
+```bash
+mvn clean package -DskipTests
+```
+
+This command deletes old outputs, resolves dependencies, compiles the project, **compiles the test classes**, skips executing tests, and packages artifacts. It is the recommended repeatable build command when DemoQA or a browser may be unavailable.
+
+Expected artifacts for version `1.0.0`:
+
+```text
+target/demoqa-automation-framework-1.0.0.jar
+target/demoqa-automation-framework-1.0.0-tests.jar
+```
+
+**Why two JARs?** This project is a **test automation framework**, with its Java implementation under `src/test/java`, not `src/main/java`. The regular JAR therefore contains build metadata rather than application classes. The Maven JAR Plugin's `test-jar` goal packages the compiled test/framework classes into the `-tests.jar` artifact. The test JAR is **not a standalone executable** and does not bundle external dependencies; Maven manages those libraries and runs the tests.
+
+Inspect the packaged classes:
+
+```bash
+jar tf target/demoqa-automation-framework-1.0.0-tests.jar
+```
+
+The package should contain classes such as `tests/api/BookStoreApiTests.class`.
+
+### Install the packaged artifacts locally
+
+```bash
+mvn clean install -DskipTests
+```
+
+This runs the Maven lifecycle through `install`, placing the versioned JAR artifacts into the local Maven repository (`~/.m2/repository`). External tests remain skipped, but test compilation still takes place.
+
+### Run tests
+
+The test framework is run **with Maven**, not by executing the JAR with `java -jar`.
+
+Run the configured smoke suite (UI and API):
 
 ```bash
 mvn clean test
 ```
 
-Run a specific test class:
+Run the smoke suite with a headless browser:
 
 ```bash
-mvn test -Dtest=CheckBoxTests
+mvn test -Dheadless=true
 ```
 
-Run a specific test method:
-
-```bash
-mvn test -Dtest=CheckBoxTests#homeSelectionDisplaysResult
-```
-
-Run the configured regression suite:
+Run the regression suite:
 
 ```bash
 mvn test -Dsurefire.suiteXmlFiles=testng-regression.xml
 ```
 
-> **Note:** The exact supported browser and runtime settings are defined by the project's current Java configuration. Check the `Settings` class and `pom.xml` before adding command-line overrides. Running a specific method with `-Dtest` is not equivalent to running the complete XML suite.
+Run a specific test class or method:
 
-## Test Execution with TestNG
+```bash
+mvn test -Dtest=CheckBoxTests
+mvn test -Dtest=CheckBoxTests#homeSelectionDisplaysResult
+```
 
-The `testng.xml` suite separates browser-based and API tests:
+The last command requires that the named method exist in the current test source. Command-line test selection can differ from executing the complete TestNG XML suite.
 
-- **UI Smoke:** runs test methods tagged with the `smoke` group in the listed UI test classes.
-- **API Smoke:** runs test methods tagged with the `api` group in `BookStoreApiTests`.
-- **Listener:** registers `listeners.ScreenshotListener`.
-- **Execution mode:** `parallel="false"` for controlled sequential execution.
+> **Important:** UI/API integration tests contact the public DemoQA service. They can fail due to site changes, browser incompatibility, network availability, or rate limits even when Maven compilation and packaging work correctly. Run tests responsibly and avoid stress/load testing a public demonstration service.
+
+## Maven Build Automation (TFSD Course 4)
+
+Maven's lifecycle and the project's `pom.xml` automate four core build responsibilities:
+
+| Requirement | Maven configuration or command | What it does |
+| --- | --- | --- |
+| Dependency management | `<dependencies>` and `mvn dependency:tree` | Resolves Selenium, TestNG, REST Assured, Jackson, and transitive dependencies from Maven repositories |
+| Compilation | `maven-compiler-plugin`, Java release `17` | Compiles Java test sources during `test-compile` |
+| Version management | `<version>1.0.0</version>` and dependency version properties | Centralizes the project and dependency versions and includes the project version in output artifact names |
+| Packaging | `maven-jar-plugin` with `test-jar` bound to `package` | Produces the classified test JAR containing compiled automation classes |
+| Reproducible commands | `mvn clean package -DskipTests`, `mvn clean install -DskipTests` | Runs documented build lifecycles using the checked-in `pom.xml` |
+
+### Dependency management
+
+The project specifies direct dependencies in `pom.xml`, with centrally managed versions:
+
+| Dependency | Version | Scope | Purpose |
+| --- | --- | --- | --- |
+| `org.seleniumhq.selenium:selenium-java` | `4.52.0` | `test` | Selenium browser interactions |
+| `org.testng:testng` | `7.11.0` | `test` | Test runner and assertions |
+| `io.rest-assured:rest-assured` | `6.3.0` | `test` | HTTP/API tests |
+| `com.fasterxml.jackson.core:jackson-databind` | `2.18.3` | `test` | JSON data support |
+
+All four dependencies use `test` scope because they are used by source files under `src/test/java`. Maven also resolves transitive dependencies. Review the resolved dependency tree with:
+
+```bash
+mvn dependency:tree
+```
+
+### Build configuration and project metadata
+
+The `pom.xml` identifies the artifact via:
+
+```text
+groupId:    dev.luqman.qa
+artifactId: demoqa-automation-framework
+version:    1.0.0
+packaging:  jar
+```
+
+It also includes a project name, description, author/developer, and GitHub source-control URL. Dependency versions are centralized using properties such as `selenium.version` and `testng.version`. Versions should be changed deliberately and committed to version control. No license is asserted here unless a matching license file is added to the repository.
+
+The build uses `maven-compiler-plugin`, `maven-surefire-plugin`, and `maven-jar-plugin`. The default Maven profile defines the DemoQA URL, Chrome as the browser, and non-headless execution; these defaults can be overridden with `-D` command-line options.
+
+### Reproducing the build on another machine
+
+```bash
+git clone https://github.com/lucka605/demoqa-automation-framework.git
+cd demoqa-automation-framework
+mvn clean package -DskipTests
+```
+
+This is a straightforward source build, provided the machine meets the JDK/Maven requirements and can download dependencies. Versions for direct dependencies and selected plugins are pinned in `pom.xml`; Maven may still resolve transitive dependencies and plugins from configured repositories.
 
 ## Reports and Troubleshooting
 
-After a Maven test run, inspect the generated test output under:
+After tests run, examine TestNG/Maven reports under:
 
 ```text
 target/surefire-reports/
 ```
 
-When a UI test fails, the registered listener attempts to save a screenshot under:
+The failure listener may save screenshots under:
 
 ```text
 target/screenshots/
 ```
 
-Screenshot capture depends on the browser session still being available at the time of failure.
-
-A practical debugging workflow is to:
-
-1. Read the failing TestNG assertion or stack trace.
-2. Check the related Page Object locator or API response.
-3. Inspect the page's current DOM using browser developer tools when UI locators fail.
-4. Fix the underlying problem and rerun the affected test before executing the full suite.
+A practical debugging workflow is to inspect a failing assertion or stack trace, locate the related Page Object/API response, check current DOM locators if needed, rerun the affected test, and then rerun the full suite. Screenshot capture depends on the browser session being available when the failure occurs.
 
 ## CI/CD
 
-The repository contains GitHub Actions workflow configuration intended to execute automated checks in CI. **CI success should be confirmed after pushing the project to GitHub**, since the verified green run so far was performed locally.
+The repository contains [a manually triggered GitHub Actions workflow](.github/workflows/manual-tests.yml) supporting smoke and regression selections. The workflow configuration exists, but **a successful hosted run has not yet been independently verified**. Automated pull-request validation is a future improvement.
 
 ## Roadmap
 
-- [x] Implement a Java-based UI and API automation framework
+- [x] Implement Java UI and API test framework
 - [x] Configure TestNG smoke tests
-- [x] Execute the local smoke suite successfully (9/9 passing)
-- [ ] Add more positive, negative, and boundary-value scenarios
-- [ ] Review and strengthen assertions and test isolation
-- [ ] Verify GitHub Actions execution on a hosted runner
-- [ ] Improve reporting and execution documentation
+- [x] Run the local smoke suite successfully (9/9 on November 5, 2026)
+- [x] Configure Maven packaging of compiled test classes
+- [ ] Add more positive, negative, and boundary-value tests
+- [ ] Improve assertions and test isolation
+- [ ] Verify a successful GitHub Actions run
+- [ ] Add automatic pull-request checks, linting, and generated Javadoc in later work
 
 ## Responsible Testing
 
-[DemoQA](https://demoqa.com/) is a public demonstration website. Keep automated test volume low and avoid running load or stress tests against public services without explicit authorization.
+[DemoQA](https://demoqa.com/) is a public demonstration website. Keep automated test volume low; do not run load or stress tests against public services without explicit authorization.
 
 ## Author
 
@@ -184,4 +247,4 @@ Software Quality Assurance / Test Automation
 
 ---
 
-*This project is developed for hands-on learning, framework design practice, and QA automation portfolio demonstration.*
+*This repository is a hands-on project for framework design, quality engineering, build automation, and learning.*
